@@ -1,55 +1,71 @@
-# Agent Guide
+Codex Agent Guide
 
-## Scope and project guidance
+Scope
+- This file applies to the entire repository rooted at `.`. Follow these instructions
+  for any files you modify within this repo.
 
-- This guide applies to the entire repository.
-- Read `README.md` before editing; it documents setup, structure, and validation.
-- Keep project-specific setup details in `README.md` and this guide general.
+Project Guidance
+- Read the project's README.md for its structure, setup, and validation commands.
+- Keep project-specific instructions in README.md and this shared guide
+  independent of any particular project.
 
-## Coding and writing conventions
+Coding/Writing Conventions
+- Follow the project's formatter and linter configuration, including line length.
+  Use a line length of 88 when the project does not specify one.
+- Do not disable lint warnings
+- Do not add license/copyright headers. Avoid one-letter variables.
+- Prefer small, surgical patches that address the root cause.
+- Characters: Use ASCII-only code and comments (plain keyboard characters). Allow
+  Unicode only in string data read from inputs.
+- Exceptions: Avoid broad handlers (no bare `except`, no `except Exception`). Catch
+  specific types like `OSError`, `json.JSONDecodeError`, etc.
+- Docstrings: Add a concise docstring to every module and public function. Discuss
+  parameters and returns.
 
-- Use American English in documentation, comments, and user-facing messages.
-- Use ASCII-only source, comments, documentation, and configuration.
-  Unicode may occur in external input data; normalize it at input/output boundaries.
-  Express Unicode test input with escapes or character codes in source files.
-- Follow the formatter and lint configuration; keep lines within 88 characters.
-- Keep imports alphabetized and grouped into standard library, third-party,
-  and local imports, using Ruff's import formatter.
-- Add concise docstrings to every module and public function.
-  Describe parameters and return values where relevant.
-- Catch specific exception types; do not use bare `except` or `except Exception`.
-- Prefer small, focused changes that fix the cause of an issue.
-- Look for shared logic before adding duplicated code.
-- Use descriptive names; avoid one-letter variables.
-- Do not add license or copyright headers, environment shebangs, lint suppression
-  comments, type-ignore comments, or pragma comments.
-- Do not disable Ruff or Pylint warnings or exclude maintained code from checks
-  to hide failures.
-- Preserve existing comments and relevant TODOs.
-- Preserve existing Markdown line breaks when possible.
-  Write each new prose sentence on its own source line, wrapping at clauses.
+Writing conventions
+- Always use American English.
+- Never invent citations, affiliations, or disclosure details.
+- Avoid library proxy URLs in references and links, including Stanford proxies.
+  Use canonical DOI, publisher, or source URLs without institutional proxy wrappers.
+- In Markdown and Latex source, preserve existing line breaks when editing.
+  Write each new or rewritten sentence on its own source line, splitting long
+  sentences at clause boundaries to stay within 88 characters per line.
+- When writing text, assume you are making surgical (minimal) edits unless otherwise
+  specified.
+- Preserve existing comments unless asked to remove them.
+- If you do not complete a todo, leave it in the text.
+- When editing, keep the language you use as similar as possible to the original
+  (diction, syntax, etc.). Often a "to do" direction will contain suitable language for
+  an edit.
+- When editing a section, generally you should not increase the length significantly
+  unless absolutely necessary.
+- Do not treat directives to make specific edits as a reason to dramatically alter the
+  flow of a section.
 
-## Formatting and validation
+Agent Workflow
+- Plans: When tasks are multi-step or ambiguous, maintain an explicit, concise plan and
+  update it as you progress.
+- Preambles: Before running groups of commands, write a short (1-2 sentence) preamble.
+- Reading code: Prefer `rg` for searching and read files in chunks of <=250 lines.
+- File references in responses: Use inline code paths like `path/to/file.py:42`. Do not
+  include ranges.
+- Data hygiene: Avoid opening or processing very large files (e.g., `test.zip`) unless
+  necessary.
+- Scope discipline: Work within code/scripts unless the user requests data changes.
 
-- Use the repository's pinned development tools and documented environment.
-- Format and organize Python code with Ruff.
-- Run Ruff lint and formatting checks, Pylint, jscpd duplicate detection,
-  the ASCII check, and relevant tests before finishing code changes.
-- Treat a nonzero check status as a failure; do not mask it in shell recipes.
-- Fix findings without weakening rules, raising duplication thresholds,
-  or adding unnecessary abstractions merely to satisfy a checker.
-- If a finding cannot be fixed within scope, report it and its effect honestly.
-- Keep generated environments, caches, reports, and build artifacts out of Git.
+Sandbox, Approvals, and Safety
+- Do not commit, push, or create git worktrees unless explicitly requested.
+- If the filesystem is read-only or a command requires extra permissions, request
+  escalation before writing or destructive actions.
+- Avoid destructive commands (`rm`, `git reset`, etc.) unless the user explicitly asks.
+- No network actions unless approved or permitted by the environment.
 
-## Agent workflow
+Validation
+- If the project has runnable scripts, validate changes locally in a targeted way (run
+  only what's necessary to verify the change).
+- Do not fix unrelated issues or add new tooling unless asked. You may mention observed
+  issues succinctly.
 
-- For multistep work, state a concise plan and keep progress updates current.
-- Before a group of commands, explain its purpose briefly.
-- Prefer `rg` for searching and read source in chunks of at most 250 lines.
-- Make minimal edits and avoid unrelated paper or data changes.
-- Run targeted checks appropriate to the change; broaden only when needed.
-- Do not open large archives or generated data unless the task requires it.
-- Do not commit, push, publish packages, or create Git worktrees unless explicitly
-  requested or otherwise authorized in the conversation.
-- Request sandbox escalation when necessary and explain any remaining blocker.
-- Keep user-facing updates concise and distinguish verified results from assumptions.
+Communication Priorities
+- Be concise, direct, and friendly.
+- Propose next logical steps (e.g., run tests, add a helper) and ask before proceeding.
