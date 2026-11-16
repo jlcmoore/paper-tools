@@ -188,7 +188,10 @@ class PackagingTests(unittest.TestCase):
                     _validate(Path("main.tex"), self.cleaned, staging)
 
     def _log_writer(self, warning):
+        """Return a fake compiler that writes warning to the LaTeX log."""
+
         def write_log(_command, *, cwd, **_options):
+            """Write the supplied warning in cwd and return empty stdout."""
             (cwd / "main.log").write_text(warning, encoding="utf-8")
             return ""
 
@@ -199,6 +202,7 @@ class PackagingTests(unittest.TestCase):
         calls = []
 
         def compile_source(command, *, cwd, **_options):
+            """Record command and request reruns in cwd's log until pass three."""
             calls.append(command)
             message = "Label(s) may have changed." if len(calls) < 3 else "OK"
             (cwd / "main.log").write_text(message, encoding="utf-8")
@@ -227,6 +231,7 @@ class PackagingTests(unittest.TestCase):
                 staging.mkdir()
 
                 def run_command(command, *, expected=failed_command, **_options):
+                    """Fail the expected command and return empty stdout otherwise."""
                     if command[0] == expected:
                         raise paper.WorkflowError("command failed")
                     return ""

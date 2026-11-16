@@ -67,17 +67,23 @@ class WorkflowError(RuntimeError):
 
 
 def _require_tools(*names):
+    """Raise WorkflowError if any named command is missing from PATH."""
     missing = [name for name in names if shutil.which(name) is None]
     if missing:
         raise WorkflowError("Required command(s) not found: " + ", ".join(missing))
 
 
 def _require_file(path):
+    """Raise WorkflowError if path is not an existing file."""
     if not path.is_file():
         raise WorkflowError(f"File not found: {path}")
 
 
 def _run(command, *, cwd=None, input_text=None, log=None):
+    """Run command and return stdout, raising WorkflowError on failure.
+
+    Optionally set cwd, send input_text to stdin, and save output to log.
+    """
     result = subprocess.run(
         command,
         cwd=cwd,
@@ -102,6 +108,7 @@ def _run(command, *, cwd=None, input_text=None, log=None):
 
 
 def _extract_abstract(expanded):
+    """Return abstract text from expanded LaTeX, rejecting missing or empty text."""
     starts = list(re.finditer(r"\\begin\s*\{abstract\}", expanded))
     if starts:
         if len(starts) != 1:
@@ -125,6 +132,7 @@ def _extract_abstract(expanded):
 
 
 def _abstract(args):
+    """Extract the abstract from args.source and print one ASCII line."""
     _require_tools("latexpand", "pandoc", "iconv")
     _require_file(args.source)
     unexpanded = _run(["latexpand", "--keep-includes", str(args.source)])
@@ -166,6 +174,7 @@ def _abstract(args):
 
 
 def _relative_path(value):
+    """Return value as a Path, rejecting absolute paths and parent traversal."""
     path = Path(value)
     if path.is_absolute() or ".." in path.parts or path == Path("."):
         raise argparse.ArgumentTypeError(
@@ -175,6 +184,7 @@ def _relative_path(value):
 
 
 def _stage(args, work_dir, temp_root):
+    """Copy sources to work_dir, apply args.replace, and save logs in temp_root."""
     includes = [args.source]
     includes.extend(
         path
@@ -208,6 +218,7 @@ def _stage(args, work_dir, temp_root):
 
 
 def _check_references(log):
+    """Return log text, raising WorkflowError for reference or bibliography errors."""
     text = log.read_text(encoding="utf-8", errors="replace")
     matches = [
         line.strip() for line in text.splitlines() if BAD_REFERENCES.search(line)
@@ -221,6 +232,7 @@ def _check_references(log):
 
 
 def _validate(source, cleaned_dir, temp_root):
+    """Check source compiles from cleaned_dir; keep build files in temp_root."""
     validate_dir = temp_root / "validate"
     shutil.copytree(cleaned_dir, validate_dir)
     print("Validating cleaned arXiv source with pdflatex", flush=True)
@@ -246,6 +258,7 @@ def _validate(source, cleaned_dir, temp_root):
 
 
 def _write_archive(cleaned_dir, output):
+    """Zip cleaned_dir into output, preserving any old archive on failure."""
     # Create beside the destination so os.replace is atomic across filesystems.
     with tempfile.NamedTemporaryFile(
         prefix=f".{output.name}.",
@@ -265,6 +278,7 @@ def _write_archive(cleaned_dir, output):
 
 
 def _arxiv(args):
+    """Build, clean, and validate args.source before writing args.output."""
     _require_tools("arxiv_latex_cleaner", "latexmk", "pdflatex", "rsync")
     _require_file(args.source)
     _require_file(args.config)
