@@ -1,0 +1,10 @@
+{
+  "name": "paper-tools-development",
+  "private": true,
+  "scripts": {
+    "jscpd": "jscpd --config .jscpd.json src tests tools"
+  },
+  "devDependencies": {
+    "jscpd": "5.0.11"
+  }
+}

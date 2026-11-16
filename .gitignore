@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.venv/
+.ruff_cache/
+.uv-cache/
+.npm-cache/
+.pylint.d/
+node_modules/
+dist/
